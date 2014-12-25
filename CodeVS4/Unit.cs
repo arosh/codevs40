@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,9 +15,9 @@ namespace CodeVS4
 
     public interface IUnit
     {
-        IPoint Point { get; }
-        EUnitType Type { get; }
         int Id { get; }
+        EUnitType Type { get; }
+        IPoint Point { get; }
         int Hp { get; }
     }
 
@@ -52,6 +54,50 @@ namespace CodeVS4
         public const int CastleCost = 0;
         public const int VillageCost = 100;
         public const int BaseCost = 500;
+
+        public static int GetDefaultHp(EUnitType type)
+        {
+            int hp;
+            switch (type)
+            {
+                case EUnitType.Castle:
+                    hp = CastleHp;
+                    break;
+                case EUnitType.Village:
+                    hp = VillageHp;
+                    break;
+                case EUnitType.Base:
+                    hp = BaseHp;
+                    break;
+                case EUnitType.Worker:
+                    hp = WorkerHp;
+                    break;
+                case EUnitType.Knight:
+                    hp = KnightHp;
+                    break;
+                case EUnitType.Fighter:
+                    hp = FighterHp;
+                    break;
+                case EUnitType.Assassin:
+                    hp = AssassinHp;
+                    break;
+                default:
+                    throw new InvalidEnumArgumentException();
+            }
+            return hp;
+        }
+
+        public Unit()
+        {
+
+        }
+
+        public Unit(int id, EUnitType type, IPoint point, int Hp)
+        {
+
+        }
+
+        public Unit(int id, EUnitType type, IPoint point) : this(id, type, point, GetDefaultHp(type)) { }
 
         public IPoint Point
         {

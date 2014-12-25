@@ -9,7 +9,6 @@ namespace CodeVS4
 {
     interface IGame
     {
-        IField Field { get; }
         int Turn { get; }
         EGameResult Next();
     }
@@ -21,21 +20,38 @@ namespace CodeVS4
 
     public class Game : IGame
     {
+        private const int FieldSize = 100;
+        private static readonly Point[] basePoint = new[] { new Point(0, 0), new Point(99, 99) };
         private Player[] Players;
-        private IEnumerable<IUnit>[] Units;
-        private IEnumerable<IUnit> Resources;
-        public IField Field { get; private set; }
+        private IList<IUnit>[] Units;
+        private IEnumerable<IPoint> Resources;
         public int Turn { get; private set; }
-        private static Random Random_ = new Random(114514);
-        public static Random Random { get { return Random_; } }
+        public int Id { get; private set; }
+        public static readonly Random Random = new Random(114514);
 
         public Game()
         {
-            Field = new Field();
-            Players = new Player[2];
+            Players = new[] { new Player(), new Player() };
+            Units = new[] { new List<IUnit>(), new List<IUnit>() };
             Turn = 1;
-            Resources = new List<IUnit>();
+            Id = 0;
 
+            var castles = LocateCastles();
+            for (int i = 0; i < 2; i++)
+            {
+                Units[i].Add(new Unit(Id++, EUnitType.Castle, castles[i]));
+                
+            }
+
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    Units[i].Add(new Unit(Id++, EUnitType.Worker, castles[i]));
+                }
+            }
+
+            Resources = LocateResources(castles);
         }
 
         public static int Manhattan(IPoint a, IPoint b)
@@ -45,8 +61,8 @@ namespace CodeVS4
 
         public static IPoint RandomPoint()
         {
-            int X = Random.Next(100);
-            int Y = Random.Next(100);
+            int X = Random.Next(FieldSize);
+            int Y = Random.Next(FieldSize);
             return new Point(X, Y);
         }
 
@@ -75,15 +91,18 @@ namespace CodeVS4
             return ret;
         }
 
-        public static IEnumerable<IPoint>[] LocateResources(IPoint[] castles)
+        public static IEnumerable<IPoint> LocateResources(IPoint[] castles)
         {
-            return new[] { LocateResource(new Point(0, 0), castles[0]), LocateResource(new Point(99, 99), castles[1]) };
+            var a = LocateResource(basePoint[0], castles[0]);
+            var b = LocateResource(basePoint[1], castles[1]);
+            var ret = new List<IPoint>();
+            ret.AddRange(a);
+            ret.AddRange(b);
+            return ret;
         }
 
-        public static IPoint[] LocateCastle()
+        public static IPoint[] LocateCastles()
         {
-            var basePoint = new[] { new Point(0, 0), new Point(99, 99) };
-
             var ret = new IPoint[2];
             do
             {
@@ -125,6 +144,7 @@ namespace CodeVS4
 
         }
 
+        // 城もぶっ壊す
         private void RemoveUnitPhase()
         {
 
@@ -137,20 +157,20 @@ namespace CodeVS4
 
         private EGameResult EndPhase()
         {
-            int a = Players[0].Castle.Hp;
-            int b = Players[1].Castle.Hp;
-
-            if (a == 0 && b == 0)
+            bool a = Units[0].Count(unit => unit.Type == EUnitType.Castle) > 0;
+            bool b = Units[1].Count(unit => unit.Type == EUnitType.Castle) > 0;
+            
+            if (a == false && b == false)
             {
                 return EGameResult.Draw;
             }
 
-            if (b == 0)
+            if (b == false)
             {
                 return EGameResult.Win;
             }
 
-            if (a == 0)
+            if (a == false)
             {
                 return EGameResult.Lose;
             }
