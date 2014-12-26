@@ -7,8 +7,8 @@
     <ProjectGuid>{E2859790-BB6D-456D-8FE1-6D09433BBA5E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CodeVS4Lib</RootNamespace>
-    <AssemblyName>CodeVS4Lib</AssemblyName>
+    <RootNamespace>CodeVS4</RootNamespace>
+    <AssemblyName>CodeVS4</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -36,6 +36,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Game.cs" />
+    <Compile Include="GameConstant.cs" />
     <Compile Include="Order.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Point.cs" />

@@ -20,14 +20,11 @@ namespace CodeVS4
 
     public class Game : IGame
     {
-        private const int FieldSize = 100;
-        private static readonly Point[] basePoint = new[] { new Point(0, 0), new Point(99, 99) };
         private Player[] Players;
         private IList<IUnit>[] Units;
         private IEnumerable<Point> Resources;
         public int Turn { get; private set; }
         public int Id { get; private set; }
-        public static readonly Random Random = new Random(114514);
 
         public Game()
         {
@@ -61,8 +58,8 @@ namespace CodeVS4
 
         public static Point RandomPoint()
         {
-            int X = Random.Next(FieldSize);
-            int Y = Random.Next(FieldSize);
+            int X = GameConstant.Random.Next(GameConstant.FieldSize);
+            int Y = GameConstant.Random.Next(GameConstant.FieldSize);
             return new Point(X, Y);
         }
 
@@ -85,7 +82,7 @@ namespace CodeVS4
                             break;
                         }
                     }
-                } while (f == false || Manhattan(p, basePoint) > 99 || Manhattan(p, castle) <= Unit.CastleView);
+                } while (f == false || Manhattan(p, basePoint) > 99 || Manhattan(p, castle) <= GameConstant.GetViewRange(EUnitType.Castle));
                 ret.Add(p);
             }
             return ret;
@@ -93,8 +90,8 @@ namespace CodeVS4
 
         public static IEnumerable<Point> LocateResources(Point[] castles)
         {
-            var a = LocateResource(basePoint[0], castles[0]);
-            var b = LocateResource(basePoint[1], castles[1]);
+            var a = LocateResource(GameConstant.BasePoint[0], castles[0]);
+            var b = LocateResource(GameConstant.BasePoint[1], castles[1]);
             var ret = new List<Point>();
             ret.AddRange(a);
             ret.AddRange(b);
@@ -107,12 +104,12 @@ namespace CodeVS4
             do
             {
                 ret[0] = RandomPoint();
-            } while (Manhattan(ret[0], basePoint[0]) > 40);
+            } while (Manhattan(ret[0], GameConstant.BasePoint[0]) > 40);
 
             do
             {
                 ret[1] = RandomPoint();
-            } while (Manhattan(ret[1], basePoint[1]) > 40);
+            } while (Manhattan(ret[1], GameConstant.BasePoint[1]) > 40);
 
             return ret;
         }
