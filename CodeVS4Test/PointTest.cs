@@ -10,7 +10,8 @@ namespace CodeVS4Test
         [TestMethod]
         public void EqualsTest()
         {
-            IPoint p = new Point(0, 0);
+            Point p = new Point(0, 0);
+
             Assert.IsTrue(p.Equals(new Point(0, 0)));
             Assert.IsFalse(p.Equals(new Point(0, 1)));
             Assert.IsFalse(p.Equals(new Point(1, 0)));

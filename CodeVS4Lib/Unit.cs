@@ -17,7 +17,7 @@ namespace CodeVS4
     {
         int Id { get; }
         EUnitType Type { get; }
-        IPoint Point { get; }
+        Point Point { get; }
         int Hp { get; }
     }
 
@@ -92,14 +92,14 @@ namespace CodeVS4
 
         }
 
-        public Unit(int id, EUnitType type, IPoint point, int Hp)
+        public Unit(int id, EUnitType type, Point point, int Hp)
         {
 
         }
 
-        public Unit(int id, EUnitType type, IPoint point) : this(id, type, point, GetDefaultHp(type)) { }
+        public Unit(int id, EUnitType type, Point point) : this(id, type, point, GetDefaultHp(type)) { }
 
-        public IPoint Point
+        public Point Point
         {
             get { throw new NotImplementedException(); }
         }

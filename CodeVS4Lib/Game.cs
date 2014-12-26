@@ -24,7 +24,7 @@ namespace CodeVS4
         private static readonly Point[] basePoint = new[] { new Point(0, 0), new Point(99, 99) };
         private Player[] Players;
         private IList<IUnit>[] Units;
-        private IEnumerable<IPoint> Resources;
+        private IEnumerable<Point> Resources;
         public int Turn { get; private set; }
         public int Id { get; private set; }
         public static readonly Random Random = new Random(114514);
@@ -54,24 +54,24 @@ namespace CodeVS4
             Resources = LocateResources(castles);
         }
 
-        public static int Manhattan(IPoint a, IPoint b)
+        public static int Manhattan(Point a, Point b)
         {
             return Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);
         }
 
-        public static IPoint RandomPoint()
+        public static Point RandomPoint()
         {
             int X = Random.Next(FieldSize);
             int Y = Random.Next(FieldSize);
             return new Point(X, Y);
         }
 
-        public static IEnumerable<IPoint> LocateResource(IPoint basePoint, IPoint castle)
+        public static IEnumerable<Point> LocateResource(Point basePoint, Point castle)
         {
-            var ret = new List<IPoint>();
+            var ret = new List<Point>();
             for (int i = 0; i < 10; i++)
             {
-                IPoint p;
+                Point p;
                 bool f;
                 do
                 {
@@ -91,19 +91,19 @@ namespace CodeVS4
             return ret;
         }
 
-        public static IEnumerable<IPoint> LocateResources(IPoint[] castles)
+        public static IEnumerable<Point> LocateResources(Point[] castles)
         {
             var a = LocateResource(basePoint[0], castles[0]);
             var b = LocateResource(basePoint[1], castles[1]);
-            var ret = new List<IPoint>();
+            var ret = new List<Point>();
             ret.AddRange(a);
             ret.AddRange(b);
             return ret;
         }
 
-        public static IPoint[] LocateCastles()
+        public static Point[] LocateCastles()
         {
-            var ret = new IPoint[2];
+            var ret = new Point[2];
             do
             {
                 ret[0] = RandomPoint();
