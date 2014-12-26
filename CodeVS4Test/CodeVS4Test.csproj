@@ -55,8 +55,8 @@
     <Compile Include="GameTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\CodeVS4\CodeVS4.csproj">
-      <Project>{1721033b-5de4-461b-b2c1-08009900caa2}</Project>
+    <ProjectReference Include="..\CodeVS4Lib\CodeVS4.csproj">
+      <Project>{e2859790-bb6d-456d-8fe1-6d09433bba5e}</Project>
       <Name>CodeVS4</Name>
     </ProjectReference>
   </ItemGroup>
