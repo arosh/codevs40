@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace CodeVS4
 {
@@ -16,13 +13,15 @@ namespace CodeVS4
 
         public Point(int x, int y)
         {
+            Debug.Assert(0 <= x && x <= 99);
+            Debug.Assert(0 <= y && y <= 99);
             X = x;
             Y = y;
         }
 
         public override string ToString()
         {
-            return string.Format("{{ X = {0}, Y = {1} }}", X, Y);
+            return string.Format("Point {{ X = {0}, Y = {1} }}", X, Y);
         }
 
         // public bool Equals(object other)を実装しても良さそうだが、

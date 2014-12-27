@@ -1,32 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CodeVS4
+﻿namespace CodeVS4
 {
-    enum EOrder
+    public enum EOrderType
     {
-        Move, Build, Attack
+        MoveU, MoveD, MoveL, MoveR, BuildWorker, BuildKnight, BuildFighter, BuildAssassin, BuildVillage, BuildBase
     }
 
-    interface IOrder
+    public interface IOrder
     {
-        EOrder Type { get; }
-        EUnitType Target { get; }
+        int UnitId { get; }
+        EOrderType Type { get; }
     }
 
-    class Order : IOrder
+    public class Order : IOrder
     {
-        public EOrder Type
+        public int UnitId { get; private set; }
+        public EOrderType Type { get; private set; }
+        public Order() { }
+        public Order(int unitId, EOrderType type)
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        public EUnitType Target
-        {
-            get { throw new NotImplementedException(); }
+            UnitId = unitId;
+            Type = type;
         }
     }
 }
