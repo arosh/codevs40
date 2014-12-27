@@ -3,16 +3,19 @@ using System.Collections.Generic;
 
 namespace CodeVS4
 {
-    interface IPlayer
+    public interface IPlayer
     {
-        IEnumerable<IOrder> Think(IEnumerable<IUnit> my, IEnumerable<IUnit> en, IEnumerable<Point> resources);
+        IEnumerable<IOrder> Think(Input input);
+        string Name { get; }
     }
 
-    class Player : IPlayer
+    public class Player : IPlayer
     {
-        public IEnumerable<IOrder> Think(IEnumerable<IUnit> my, IEnumerable<IUnit> en, IEnumerable<Point> resources)
+        public IEnumerable<IOrder> Think(Input input)
         {
             throw new NotImplementedException();
         }
+
+        public string Name { get; private set; }
     }
 }

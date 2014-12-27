@@ -33,7 +33,7 @@ namespace CodeVS4
             var castles = LocateCastles();
             for (int i = 0; i < 2; i++)
             {
-                Units[i].Add(new Unit(Id++, EUnitType.Castle, castles[i]));
+                Units[i].Add(new Unit(Id++, UnitType.Castle, castles[i]));
                 
             }
 
@@ -41,7 +41,7 @@ namespace CodeVS4
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    Units[i].Add(new Unit(Id++, EUnitType.Worker, castles[i]));
+                    Units[i].Add(new Unit(Id++, UnitType.Worker, castles[i]));
                 }
             }
 
@@ -79,7 +79,7 @@ namespace CodeVS4
                             break;
                         }
                     }
-                } while (f == false || Manhattan(p, basePoint) > 99 || Manhattan(p, castle) <= GameConstant.GetViewRange(EUnitType.Castle));
+                } while (f == false || Manhattan(p, basePoint) > 99 || Manhattan(p, castle) <= GameConstant.GetViewRange(UnitType.Castle));
                 ret.Add(p);
             }
             return ret;
@@ -151,8 +151,8 @@ namespace CodeVS4
 
         private EGameResult EndPhase()
         {
-            bool a = Units[0].Count(unit => unit.Type == EUnitType.Castle) > 0;
-            bool b = Units[1].Count(unit => unit.Type == EUnitType.Castle) > 0;
+            bool a = Units[0].Count(unit => unit.Type == UnitType.Castle) > 0;
+            bool b = Units[1].Count(unit => unit.Type == UnitType.Castle) > 0;
             
             if (a == false && b == false)
             {

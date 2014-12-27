@@ -2,9 +2,14 @@
 
 namespace CodeVS4
 {
-    public enum EUnitType
+    public enum UnitType
     {
         Worker, Knight, Fighter, Assassin, Castle, Village, Base
+    }
+
+    public enum OrderType
+    {
+        MoveU, MoveD, MoveL, MoveR, BuildWorker, BuildKnight, BuildFighter, BuildAssassin, BuildVillage, BuildBase
     }
 
     static class GameConstant
@@ -29,29 +34,61 @@ namespace CodeVS4
             { 100, 100, 100, 100, 100, 100, 100}
         };
 
-        public static int GetDefaultHp(EUnitType unitType)
+        public static int GetDefaultHp(UnitType unitType)
         {
             return HpTbl[(int)unitType];
         }
 
-        public static int GetAttackRange(EUnitType unitType)
+        public static int GetAttackRange(UnitType unitType)
         {
             return AttackRangeTbl[(int)unitType];
         }
 
-        public static int GetViewRange(EUnitType unitType)
+        public static int GetViewRange(UnitType unitType)
         {
             return ViewRangeTbl[(int)unitType];
         }
 
-        public static int GetCost(EUnitType unitType)
+        public static int GetCost(UnitType unitType)
         {
             return CostTbl[(int)unitType];
         }
 
-        public static int GetAttack(EUnitType atk, EUnitType def)
+        public static int GetAttack(UnitType atk, UnitType def)
         {
             return AttackTbl[(int)atk, (int)def];
+        }
+
+        public static OrderType Build(UnitType unitType)
+        {
+            switch (unitType)
+            {
+                case UnitType.Worker:
+                    return OrderType.BuildWorker;
+                    break;
+
+                case UnitType.Knight:
+                    return OrderType.BuildKnight;
+                    break;
+
+                case UnitType.Fighter:
+                    return OrderType.BuildFighter;
+                    break;
+
+                case UnitType.Assassin:
+                    return OrderType.BuildAssassin;
+                    break;
+
+                case UnitType.Village:
+                    return OrderType.BuildVillage;
+                    break;
+
+                case UnitType.Base:
+                    return OrderType.BuildBase;
+                    break;
+            }
+
+            throw new ArgumentException("生産できなものを生産しようとしました。", "unitType");
         }
     }
 }

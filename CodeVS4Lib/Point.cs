@@ -9,8 +9,6 @@ namespace CodeVS4
         public int X { get; private set; }
         public int Y { get; private set; }
 
-        public Point() { }
-
         public Point(int x, int y)
         {
             Debug.Assert(0 <= x && x <= 99);

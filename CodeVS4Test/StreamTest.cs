@@ -10,25 +10,25 @@ namespace CodeVS4Test
         [TestMethod]
         public void UnitTypeIntToEnumTest()
         {
-            Assert.AreEqual(0, Stream.UnitTypeEnumToInt(EUnitType.Worker));
-            Assert.AreEqual(1, Stream.UnitTypeEnumToInt(EUnitType.Knight));
-            Assert.AreEqual(2, Stream.UnitTypeEnumToInt(EUnitType.Fighter));
-            Assert.AreEqual(3, Stream.UnitTypeEnumToInt(EUnitType.Assassin));
-            Assert.AreEqual(4, Stream.UnitTypeEnumToInt(EUnitType.Castle));
-            Assert.AreEqual(5, Stream.UnitTypeEnumToInt(EUnitType.Village));
-            Assert.AreEqual(6, Stream.UnitTypeEnumToInt(EUnitType.Base));
+            Assert.AreEqual(0, Stream.UnitTypeEnumToInt(UnitType.Worker));
+            Assert.AreEqual(1, Stream.UnitTypeEnumToInt(UnitType.Knight));
+            Assert.AreEqual(2, Stream.UnitTypeEnumToInt(UnitType.Fighter));
+            Assert.AreEqual(3, Stream.UnitTypeEnumToInt(UnitType.Assassin));
+            Assert.AreEqual(4, Stream.UnitTypeEnumToInt(UnitType.Castle));
+            Assert.AreEqual(5, Stream.UnitTypeEnumToInt(UnitType.Village));
+            Assert.AreEqual(6, Stream.UnitTypeEnumToInt(UnitType.Base));
         }
 
         [TestMethod]
         public void UnitTypeEnumToIntTest()
         {
-            Assert.AreEqual(EUnitType.Worker, Stream.UnitTypeIntToEnum(0));
-            Assert.AreEqual(EUnitType.Knight, Stream.UnitTypeIntToEnum(1));
-            Assert.AreEqual(EUnitType.Fighter, Stream.UnitTypeIntToEnum(2));
-            Assert.AreEqual(EUnitType.Assassin, Stream.UnitTypeIntToEnum(3));
-            Assert.AreEqual(EUnitType.Castle, Stream.UnitTypeIntToEnum(4));
-            Assert.AreEqual(EUnitType.Village, Stream.UnitTypeIntToEnum(5));
-            Assert.AreEqual(EUnitType.Base, Stream.UnitTypeIntToEnum(6));
+            Assert.AreEqual(UnitType.Worker, Stream.UnitTypeIntToEnum(0));
+            Assert.AreEqual(UnitType.Knight, Stream.UnitTypeIntToEnum(1));
+            Assert.AreEqual(UnitType.Fighter, Stream.UnitTypeIntToEnum(2));
+            Assert.AreEqual(UnitType.Assassin, Stream.UnitTypeIntToEnum(3));
+            Assert.AreEqual(UnitType.Castle, Stream.UnitTypeIntToEnum(4));
+            Assert.AreEqual(UnitType.Village, Stream.UnitTypeIntToEnum(5));
+            Assert.AreEqual(UnitType.Base, Stream.UnitTypeIntToEnum(6));
         }
 
         [TestMethod]
@@ -56,14 +56,14 @@ namespace CodeVS4Test
             Assert.AreEqual(7, unit.Point.Y);
             Assert.AreEqual(16, unit.Point.X);
             Assert.AreEqual(50000, unit.Hp);
-            Assert.AreEqual(EUnitType.Castle, unit.Type);
+            Assert.AreEqual(UnitType.Castle, unit.Type);
         }
 
         [TestMethod]
         public void OrderToStringTest()
         {
-            Assert.AreEqual("12 R", Stream.OrderToString(new Order(12, EOrderType.MoveR)));
-            Assert.AreEqual("22 D", Stream.OrderToString(new Order(22, EOrderType.MoveD)));
+            Assert.AreEqual("12 R", Stream.OrderToString(new Order(12, OrderType.MoveR)));
+            Assert.AreEqual("22 D", Stream.OrderToString(new Order(22, OrderType.MoveD)));
         }
     }
 }

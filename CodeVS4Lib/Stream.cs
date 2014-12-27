@@ -8,19 +8,20 @@ namespace CodeVS4
 {
     public class Input
     {
-        public int RemainMs { get; private set; }
-        public int Stage { get; private set; }
-        public int Turn { get; private set; }
-        public int Resource { get; private set; }
+        public int RemainingTimeMs { get; private set; }
+        public int CurrentStage { get; private set; }
+        public int CurrentTurn { get; private set; }
+        public int CurrentResource { get; private set; }
         public IEnumerable<IUnit> MyUnits { get; private set; }
         public IEnumerable<IUnit> EnUnits { get; private set; }
         public IEnumerable<Point> ResourcePoints { get; private set; }
+
         public Input(int remainMs, int stage, int turn, int resource, IEnumerable<IUnit> myUnits, IEnumerable<IUnit> enUnits, IEnumerable<Point> resourcePoints)
         {
-            RemainMs = remainMs;
-            Stage = stage;
-            Turn = turn;
-            Resource = resource;
+            RemainingTimeMs = remainMs;
+            CurrentStage = stage;
+            CurrentTurn = turn;
+            CurrentResource = resource;
             MyUnits = myUnits;
             EnUnits = enUnits;
             ResourcePoints = resourcePoints;
@@ -40,35 +41,45 @@ namespace CodeVS4
 
         public Input Read()
         {
-            int remainMs = int.Parse(In.ReadLine());
-            int stage = int.Parse(In.ReadLine());
-            int turn = int.Parse(In.ReadLine());
-            int resource = int.Parse(In.ReadLine());
-
-            int n;
-
-            n = int.Parse(In.ReadLine());
-            var myUnits = new IUnit[n];
-            for (int i = 0; i < n; i++)
+            try
             {
-                myUnits[i] = StringToIUnit(In.ReadLine());
-            }
+                int remainMs = int.Parse(In.ReadLine());
+                int stage = int.Parse(In.ReadLine());
+                int turn = int.Parse(In.ReadLine());
+                int resource = int.Parse(In.ReadLine());
 
-            n = int.Parse(In.ReadLine());
-            var enUnits = new IUnit[n];
-            for (int i = 0; i < n; i++)
+                int n;
+
+                n = int.Parse(In.ReadLine());
+                var myUnits = new IUnit[n];
+                for (int i = 0; i < n; i++)
+                {
+                    myUnits[i] = StringToIUnit(In.ReadLine());
+                }
+
+                n = int.Parse(In.ReadLine());
+                var enUnits = new IUnit[n];
+                for (int i = 0; i < n; i++)
+                {
+                    enUnits[i] = StringToIUnit(In.ReadLine());
+                }
+
+                n = int.Parse(In.ReadLine());
+                var resourcePoints = new Point[n];
+                for (int i = 0; i < n; i++)
+                {
+                    resourcePoints[i] = StringToPoint(In.ReadLine());
+                }
+
+                // "END"
+                string end = Console.ReadLine();
+
+                return new Input(remainMs, stage, turn, resource, myUnits, enUnits, resourcePoints);
+            }
+            catch (NullReferenceException)
             {
-                enUnits[i] = StringToIUnit(In.ReadLine());
+                return null;
             }
-
-            n = int.Parse(In.ReadLine());
-            var resourcePoints = new Point[n];
-            for (int i = 0; i < n; i++)
-            {
-                resourcePoints[i] = StringToPoint(In.ReadLine());
-            }
-
-            return new Input(remainMs, stage, turn, resource, myUnits, enUnits, resourcePoints);
         }
 
         public void Write(IEnumerable<IOrder> orders)
@@ -108,13 +119,13 @@ namespace CodeVS4
             return s.Split(delimiters).Select(value => int.Parse(value)).ToArray();
         }
 
-        public static EUnitType UnitTypeIntToEnum(int i)
+        public static UnitType UnitTypeIntToEnum(int i)
         {
             Debug.Assert(0 <= i && i <= 6);
-            return (EUnitType)i;
+            return (UnitType)i;
         }
 
-        public static int UnitTypeEnumToInt(EUnitType unitType)
+        public static int UnitTypeEnumToInt(UnitType unitType)
         {
             return (int)unitType;
         }
