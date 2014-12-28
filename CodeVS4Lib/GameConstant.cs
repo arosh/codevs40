@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Diagnostics;
 
 namespace CodeVS4
 {
     public enum UnitType
     {
-        Worker, Knight, Fighter, Assassin, Castle, Village, Base
+        Worker, Knight, Fighter, Assassin, Castle, Village, Factory
     }
 
     public enum OrderType
     {
-        MoveU, MoveD, MoveL, MoveR, BuildWorker, BuildKnight, BuildFighter, BuildAssassin, BuildVillage, BuildBase
+        MoveU, MoveD, MoveL, MoveR, BuildWorker, BuildKnight, BuildFighter, BuildAssassin, BuildVillage, BuildFactory
     }
 
     static class GameConstant
@@ -51,6 +52,7 @@ namespace CodeVS4
 
         public static int GetCost(UnitType unitType)
         {
+            Debug.Assert(unitType != UnitType.Castle);
             return CostTbl[(int)unitType];
         }
 
@@ -65,30 +67,24 @@ namespace CodeVS4
             {
                 case UnitType.Worker:
                     return OrderType.BuildWorker;
-                    break;
 
                 case UnitType.Knight:
                     return OrderType.BuildKnight;
-                    break;
 
                 case UnitType.Fighter:
                     return OrderType.BuildFighter;
-                    break;
 
                 case UnitType.Assassin:
                     return OrderType.BuildAssassin;
-                    break;
 
                 case UnitType.Village:
                     return OrderType.BuildVillage;
-                    break;
 
-                case UnitType.Base:
-                    return OrderType.BuildBase;
-                    break;
+                case UnitType.Factory:
+                    return OrderType.BuildFactory;
             }
 
-            throw new ArgumentException("生産できなものを生産しようとしました。", "unitType");
+            throw new ArgumentException("生産できないものを生産しようとしました。", "unitType");
         }
     }
 }

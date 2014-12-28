@@ -97,7 +97,7 @@ namespace CodeVS4
         {
             int[] a = StringToIntArray(s);
             Debug.Assert(a.Length == 5);
-            return new Unit(a[0], UnitTypeIntToEnum(a[4]), new Point(a[2], a[1]), a[3]);
+            return new Unit(UnitTypeIntToEnum(a[4]), a[0], new Point(a[2], a[1]), a[3]);
         }
 
         public static Point StringToPoint(string s)

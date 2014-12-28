@@ -33,7 +33,7 @@ namespace CodeVS4
             var castles = LocateCastles();
             for (int i = 0; i < 2; i++)
             {
-                Units[i].Add(new Unit(Id++, UnitType.Castle, castles[i]));
+                Units[i].Add(new Unit(UnitType.Castle, Id++, castles[i]));
                 
             }
 
@@ -41,7 +41,7 @@ namespace CodeVS4
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    Units[i].Add(new Unit(Id++, UnitType.Worker, castles[i]));
+                    Units[i].Add(new Unit(UnitType.Worker, Id++, castles[i]));
                 }
             }
 

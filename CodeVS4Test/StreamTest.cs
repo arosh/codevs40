@@ -16,7 +16,7 @@ namespace CodeVS4Test
             Assert.AreEqual(3, Stream.UnitTypeEnumToInt(UnitType.Assassin));
             Assert.AreEqual(4, Stream.UnitTypeEnumToInt(UnitType.Castle));
             Assert.AreEqual(5, Stream.UnitTypeEnumToInt(UnitType.Village));
-            Assert.AreEqual(6, Stream.UnitTypeEnumToInt(UnitType.Base));
+            Assert.AreEqual(6, Stream.UnitTypeEnumToInt(UnitType.Factory));
         }
 
         [TestMethod]
@@ -28,7 +28,7 @@ namespace CodeVS4Test
             Assert.AreEqual(UnitType.Assassin, Stream.UnitTypeIntToEnum(3));
             Assert.AreEqual(UnitType.Castle, Stream.UnitTypeIntToEnum(4));
             Assert.AreEqual(UnitType.Village, Stream.UnitTypeIntToEnum(5));
-            Assert.AreEqual(UnitType.Base, Stream.UnitTypeIntToEnum(6));
+            Assert.AreEqual(UnitType.Factory, Stream.UnitTypeIntToEnum(6));
         }
 
         [TestMethod]
