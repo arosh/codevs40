@@ -26,12 +26,17 @@
 
         public Unit(UnitType type, int id, Point point, int hp)
         {
-            this.Id = id;
             this.Type = type;
+            this.Id = id;
             this.Point = point;
             this.Hp = hp;
         }
 
         public Unit(IUnit unit) : this(unit.Type, unit.Id, unit.Point, unit.Hp) { }
+
+        public override string ToString()
+        {
+            return string.Format("Unit {{ Type = {0}, Id = {1}, Point = {2}, Hp = {3} }}", Type, Id, Point, Hp);
+        }
     }
 }

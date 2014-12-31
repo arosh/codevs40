@@ -13,7 +13,7 @@ namespace CodeVS4
         MoveU, MoveD, MoveL, MoveR, BuildWorker, BuildKnight, BuildFighter, BuildAssassin, BuildVillage, BuildFactory
     }
 
-    static class GameConstant
+    public static class GameConstant
     {
         public static readonly int FieldSize = 100;
         public static readonly Point[] BasePoint = { new Point(0, 0), new Point(99, 99) };

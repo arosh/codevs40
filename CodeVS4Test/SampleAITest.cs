@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CodeVS4;
+using System.Collections.Generic;
 
 namespace CodeVS4Test
 {
@@ -106,5 +107,82 @@ namespace CodeVS4Test
     [TestClass]
     public class SampleAITest
     {
+        [TestMethod]
+        public void UpdateSeeAreaTest()
+        {
+            {
+                bool[,] see = new bool[GameConstant.FieldSize, GameConstant.FieldSize];
+
+                for (int x = 0; x < 100; x++)
+                {
+                    for (int y = 0; y < 100; y++)
+                    {
+                        see[x, y] = false;
+                    }
+                }
+
+                var myUnits = new List<IUnit>();
+                myUnits.Add(new Unit(UnitType.Worker, -1, new Point(0, 0)));
+                SampleAI.UpdateSeeArea(see, myUnits);
+                for (int y = 0; y < 100; y++)
+                {
+                    for (int x = 0; x < 100; x++)
+                    {
+                        if (x + y <= 4)
+                        {
+                            Assert.IsTrue(see[x, y]);
+                        }
+                        else
+                        {
+                            Assert.IsFalse(see[x, y]);
+                        }
+                    }
+                }
+            }
+
+            {
+                bool[,] see = new bool[GameConstant.FieldSize, GameConstant.FieldSize];
+                var myUnits = new List<IUnit>();
+                myUnits.Add(new Unit(UnitType.Worker, -1, new Point(50, 50)));
+                SampleAI.UpdateSeeArea(see, myUnits);
+                for (int y = 0; y < 100; y++)
+                {
+                    for (int x = 0; x < 100; x++)
+                    {
+                        if (Math.Abs(x - 50) + Math.Abs(y - 50) <= 4)
+                        {
+                            Assert.IsTrue(see[x, y]);
+                        }
+                        else
+                        {
+                            Assert.IsFalse(see[x, y]);
+                        }
+                    }
+                }
+            }
+        }
+
+        [TestMethod]
+        public void MoveToNextPointTest()
+        {
+            var p = new Point(10, 10);
+            Point ret;
+
+            ret = SampleAI.MoveToNextPoint(p, new Point(0, 10));
+            Assert.AreEqual(9, ret.X);
+            Assert.AreEqual(10, ret.Y);
+
+            ret = SampleAI.MoveToNextPoint(p, new Point(20, 10));
+            Assert.AreEqual(11, ret.X);
+            Assert.AreEqual(10, ret.Y);
+
+            ret = SampleAI.MoveToNextPoint(p, new Point(10, 0));
+            Assert.AreEqual(10, ret.X);
+            Assert.AreEqual(9, ret.Y);
+
+            ret = SampleAI.MoveToNextPoint(p, new Point(10, 20));
+            Assert.AreEqual(10, ret.X);
+            Assert.AreEqual(11, ret.Y);
+        }
     }
 }
