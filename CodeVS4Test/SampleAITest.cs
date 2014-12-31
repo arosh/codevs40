@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using CodeVS4;
-using CodeVS4.SampleAI;
+using CodeVS4.Ofuton;
 
 namespace CodeVS4Test
 {
@@ -130,7 +130,7 @@ namespace CodeVS4Test
 
                 var myUnits = new List<IUnit>();
                 myUnits.Add(new Unit(UnitType.Worker, -1, new Point(0, 0)));
-                SampleAI.UpdateSeeArea(see, myUnits);
+                Ofuton.UpdateSeeArea(see, myUnits);
                 for (int y = 0; y < 100; y++)
                 {
                     for (int x = 0; x < 100; x++)
@@ -151,7 +151,7 @@ namespace CodeVS4Test
                 bool[,] see = new bool[GameConstant.FieldSize, GameConstant.FieldSize];
                 var myUnits = new List<IUnit>();
                 myUnits.Add(new Unit(UnitType.Worker, -1, new Point(50, 50)));
-                SampleAI.UpdateSeeArea(see, myUnits);
+                Ofuton.UpdateSeeArea(see, myUnits);
                 for (int y = 0; y < 100; y++)
                 {
                     for (int x = 0; x < 100; x++)
@@ -175,19 +175,19 @@ namespace CodeVS4Test
             var p = new Point(10, 10);
             Point ret;
 
-            ret = SampleAI.MoveToNextPoint(p, new Point(0, 10));
+            ret = Ofuton.MoveToNextPoint(p, new Point(0, 10));
             Assert.AreEqual(9, ret.X);
             Assert.AreEqual(10, ret.Y);
 
-            ret = SampleAI.MoveToNextPoint(p, new Point(20, 10));
+            ret = Ofuton.MoveToNextPoint(p, new Point(20, 10));
             Assert.AreEqual(11, ret.X);
             Assert.AreEqual(10, ret.Y);
 
-            ret = SampleAI.MoveToNextPoint(p, new Point(10, 0));
+            ret = Ofuton.MoveToNextPoint(p, new Point(10, 0));
             Assert.AreEqual(10, ret.X);
             Assert.AreEqual(9, ret.Y);
 
-            ret = SampleAI.MoveToNextPoint(p, new Point(10, 20));
+            ret = Ofuton.MoveToNextPoint(p, new Point(10, 20));
             Assert.AreEqual(10, ret.X);
             Assert.AreEqual(11, ret.Y);
         }
@@ -197,7 +197,7 @@ namespace CodeVS4Test
         {
             {
                 var count = new int[100, 100];
-                foreach (var point in SampleAI.FieldIter)
+                foreach (var point in Ofuton.FieldIter)
                 {
                     count[point.X, point.Y]++;
                 }
@@ -215,7 +215,7 @@ namespace CodeVS4Test
                 var count = new int[100, 100];
                 for (int i = 0; i < 2; i++)
                 {
-                    foreach (var point in SampleAI.FieldIter)
+                    foreach (var point in Ofuton.FieldIter)
                     {
                         count[point.X, point.Y]++;
                     }

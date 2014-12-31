@@ -44,7 +44,7 @@
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SampleAI\EnUnit.cs" />
-    <Compile Include="SampleAI\SampleAI.cs" />
+    <Compile Include="SampleAI\Ofuton.cs" />
     <Compile Include="SampleAI\MyUnit.cs" />
     <Compile Include="Stream.cs" />
     <Compile Include="Unit.cs" />

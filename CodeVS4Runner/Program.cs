@@ -1,5 +1,5 @@
 ﻿using CodeVS4;
-using CodeVS4.SampleAI;
+using CodeVS4.Ofuton;
 
 namespace CodeVS4Runner
 {
@@ -7,7 +7,7 @@ namespace CodeVS4Runner
     {
         static void Main(string[] args)
         {
-            IPlayer ai = new SampleAI();
+            IPlayer ai = new Ofuton();
             var stream = new Stream(ai.Name);
             while (true)
             {

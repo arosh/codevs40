@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 
-namespace CodeVS4.SampleAI
+namespace CodeVS4.Ofuton
 {
     public class MyUnit : Unit
     {
