@@ -1,7 +1,10 @@
 ﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using CodeVS4;
 using System.Collections.Generic;
+
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+using CodeVS4;
+using CodeVS4.SampleAI;
 
 namespace CodeVS4Test
 {
@@ -11,7 +14,7 @@ namespace CodeVS4Test
         [TestMethod]
         public void IsMovingTest()
         {
-            var u = new UnitEx(UnitType.Knight);
+            var u = new MyUnit(UnitType.Knight);
             Assert.IsFalse(u.IsMoving);
             Assert.IsTrue(u.IsFree);
 
@@ -27,7 +30,7 @@ namespace CodeVS4Test
         [TestMethod]
         public void IsProducingTest()
         {
-            var u = new UnitEx(UnitType.Factory);
+            var u = new MyUnit(UnitType.Factory);
             Assert.IsFalse(u.IsProducing);
             Assert.IsTrue(u.IsFree);
 
@@ -41,25 +44,10 @@ namespace CodeVS4Test
         }
 
         [TestMethod]
-        public void IsDiscoverdTest()
-        {
-            var u = new UnitEx(UnitType.Knight);
-            Assert.IsFalse(u.IsDiscovered);
-
-            u.Discover(new Point(2, 3));
-            Assert.IsTrue(u.Point.Equals(new Point(2, 3)));
-            Assert.IsTrue(u.IsDiscovered);
-
-            u.NotDiscover();
-            Assert.IsNull(u.Point);
-            Assert.IsFalse(u.IsDiscovered);
-        }
-
-        [TestMethod]
         public void CreateOrderTest()
         {
             {
-                var u = new UnitEx(UnitType.Worker, 0);
+                var u = new MyUnit(UnitType.Worker, 0);
                 Assert.IsNull(u.CreateOrder());
 
                 u.Produce = UnitType.Village;
@@ -69,7 +57,7 @@ namespace CodeVS4Test
             }
 
             {
-                var u = new UnitEx(UnitType.Worker, 0, new Point(1, 1));
+                var u = new MyUnit(UnitType.Worker, 0, new Point(1, 1));
                 Assert.IsNull(u.CreateOrder());
 
                 {
@@ -101,6 +89,25 @@ namespace CodeVS4Test
                 }
             }
 
+        }
+    }
+
+    [TestClass]
+    public class EnUnitTest
+    {
+        [TestMethod]
+        public void IsDiscoverdTest()
+        {
+            var u = new EnUnit(UnitType.Knight);
+            Assert.IsFalse(u.IsDiscovered);
+
+            u.Discover(new Point(2, 3));
+            Assert.IsTrue(u.Point.Equals(new Point(2, 3)));
+            Assert.IsTrue(u.IsDiscovered);
+
+            u.NotDiscover();
+            Assert.IsNull(u.Point);
+            Assert.IsFalse(u.IsDiscovered);
         }
     }
 
@@ -183,6 +190,46 @@ namespace CodeVS4Test
             ret = SampleAI.MoveToNextPoint(p, new Point(10, 20));
             Assert.AreEqual(10, ret.X);
             Assert.AreEqual(11, ret.Y);
+        }
+
+        [TestMethod]
+        public void FieldIterTest()
+        {
+            {
+                var count = new int[100, 100];
+                foreach (var point in SampleAI.FieldIter)
+                {
+                    count[point.X, point.Y]++;
+                }
+
+                for (int x = 0; x < GameConstant.FieldSize; x++)
+                {
+                    for (int y = 0; y < GameConstant.FieldSize; y++)
+                    {
+                        Assert.AreEqual(1, count[x, y]);
+                    }
+                }
+            }
+
+            {
+                var count = new int[100, 100];
+                for (int i = 0; i < 2; i++)
+                {
+                    foreach (var point in SampleAI.FieldIter)
+                    {
+                        count[point.X, point.Y]++;
+                    }
+                }
+                
+
+                for (int x = 0; x < GameConstant.FieldSize; x++)
+                {
+                    for (int y = 0; y < GameConstant.FieldSize; y++)
+                    {
+                        Assert.AreEqual(2, count[x, y]);
+                    }
+                }
+            }
         }
     }
 }

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using CodeVS4;
+﻿using CodeVS4;
+using CodeVS4.SampleAI;
 
 namespace CodeVS4Runner
 {

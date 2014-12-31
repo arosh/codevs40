@@ -61,6 +61,16 @@ namespace CodeVS4
             return AttackTbl[(int)atk, (int)def];
         }
 
+        public static bool IsMovable(UnitType unitType)
+        {
+            if (unitType == UnitType.Worker || unitType == UnitType.Knight || unitType == UnitType.Fighter || unitType == UnitType.Assassin)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static OrderType Build(UnitType unitType)
         {
             switch (unitType)

@@ -29,5 +29,25 @@ namespace CodeVS4
         {
             return X == other.X && Y == other.Y;
         }
+
+        public Point MoveU()
+        {
+            return new Point(X, Y - 1);
+        }
+
+        public Point MoveR()
+        {
+            return new Point(X + 1, Y);
+        }
+
+        public Point MoveD()
+        {
+            return new Point(X, Y + 1);
+        }
+
+        public Point MoveL()
+        {
+            return new Point(X - 1, Y);
+        }
     }
 }
