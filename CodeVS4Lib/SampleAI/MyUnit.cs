@@ -56,7 +56,6 @@ namespace CodeVS4.Ofuton
             }
         }
 
-        // 副作用(Random.Next)がある処理をgetterにするのは罪
         public IOrder CreateOrder()
         {
             Debug.Assert(this.Id != -1);
@@ -98,7 +97,7 @@ namespace CodeVS4.Ofuton
                 int dy = Math.Abs(Point.Y - MoveTo.Y);
                 if (dx + dy > 0)
                 {
-                    if (GameConstant.Random.Next(dx + dy) < dx)
+                    if (dy <= dx)
                     {
                         if (Point.X < MoveTo.X)
                         {

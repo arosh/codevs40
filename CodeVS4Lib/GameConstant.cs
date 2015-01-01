@@ -71,6 +71,16 @@ namespace CodeVS4
             return false;
         }
 
+        public static bool IsWarrior(UnitType unitType)
+        {
+            if (unitType == UnitType.Knight || unitType == UnitType.Fighter || unitType == UnitType.Assassin)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public static OrderType Build(UnitType unitType)
         {
             switch (unitType)

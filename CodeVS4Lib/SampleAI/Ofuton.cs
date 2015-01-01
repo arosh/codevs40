@@ -36,18 +36,13 @@ namespace CodeVS4.Ofuton
             return Output();
         }
 
-        /// <summary>
-        /// 探索を行うべきユニットの数を考える
-        /// </summary>
-        /// <returns>探索を行うべきユニットの数</returns>
-        private int ThinkSearcherNum()
-        {
-            // @magicnumber
-            return Math.Min(10, myUnits.Values.Count(unit => GameConstant.IsMovable(unit.Type)));
-        }
-
         private void ThinkRole()
         {
+        }
+
+        private int ThinkSearcherNum()
+        {
+            return 10;
         }
 
         private void ThinkSearcher()
@@ -61,147 +56,193 @@ namespace CodeVS4.Ofuton
                 }
             }
 
-            int searcherNum = ThinkSearcherNum();
-
-            for (int i = 0; i < searcherNum; i++)
+            if (enCastle.IsDiscovered == false)
             {
-                
-                int d = int.MaxValue;
-
-                var freeSearcher = myUnits.Values.Where(unit => unit.IsFree && GameConstant.IsMovable(unit.Type));
-
-                if (NeedToSearch())
+                int searcherNum = ThinkSearcherNum();
+                for (int i = 0; i < searcherNum; i++)
                 {
+                    if (NeedToSearch() == false)
+                        break;
+
+                    var freeSearcher = myUnits.Values.Where(unit => unit.IsFree && GameConstant.IsWarrior(unit.Type));
+
                     MyUnit u = null;
-                    foreach (var unit in freeSearcher)
-                    {
-                        Point p = SearchNearestShadowArea(unit.Point, seeArea2);
-                        if (p != null && d > Game.Manhattan(unit.Point, p))
-                        {
-                            d = Game.Manhattan(unit.Point, p);
-                            u = unit;
-                        }
-                    }
+                    Point p = null;
+                    SearchBestSearcher(seeArea2, freeSearcher, out u, out p);
 
                     if (u != null)
                     {
-                        Point p = SearchNearestShadowArea(u.Point, seeArea2);
                         u.MoveTo = p;
                         // ここでdを+1とか+2とかしても良いかもしれない
                         // @magicnumber
-                        UpdateSeeArea(seeArea2, p, u.Type);
+                        UpdateSeeArea(seeArea2, p, GameConstant.GetViewRange(u.Type));
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            {
+                int warriorCount = myUnits.Values.Count(unit => GameConstant.IsWarrior(unit.Type));
+                // @magicnumber
+                int searcherNum = Math.Max(0, 10 - warriorCount);
+
+                for (int i = 0; i < searcherNum; i++)
+                {
+                    if (NeedToSearch() == false)
+                        break;
+
+                    var freeSearcher = myUnits.Values.Where(unit => unit.IsFree && unit.Type == UnitType.Worker);
+
+                    MyUnit u = null;
+                    Point p = null;
+                    SearchBestSearcher(seeArea2, freeSearcher, out u, out p);
+
+                    if (u != null)
+                    {
+                        u.MoveTo = p;
+                        // ここでdを+1とか+2とかしても良いかもしれない
+                        // @magicnumber
+                        UpdateSeeArea(seeArea2, p, GameConstant.GetViewRange(u.Type));
+                    }
+                    else
+                    {
+                        break;
                     }
                 }
             }
         }
 
-        private void ThinkWorker()
+        private void SearchBestSearcher(bool[,] seeArea2, IEnumerable<MyUnit> freeSearcher, out MyUnit u, out Point p)
         {
-            #region 村の建設
-            int villageNum = myUnits.Values.Count(unit => unit.Type == UnitType.Village);
+            int d = int.MaxValue;
+            u = null;
+            p = null;
 
-            // @magicnumber
-            if (villageNum < 1 && currentResource >= GameConstant.GetCost(UnitType.Village))
+            foreach (var unit in freeSearcher)
             {
-                var resourcePoints = GetResourcePoints(resource);
-                // @magicnumber
-                if (resourcePoints.Count() >= 3)
+                Point q = SearchNearestShadowArea(unit.Point, seeArea2);
+                if (q != null && d > Game.Manhattan(unit.Point, q))
                 {
-                    // 現在判明している資源の位置への距離の和が最小となる点
-                    // 重み付けしてもよいかも
-                    Point p = FieldIter
-                        .MinBy(point =>
-                            resourcePoints
-                            .Sum(resourcePoint =>
-                                Game.Manhattan(point, resourcePoint)));
+                    d = Game.Manhattan(unit.Point, q);
+                    u = unit;
+                    p = q;
+                }
+            }
+        }
 
-                    var freeWorker = myUnits.Values
-                        .Where(unit => unit.IsFree && unit.Type == UnitType.Worker);
 
-                    if (freeWorker.Count() > 0)
+        private Point SearchNearestShadowArea(Point point, bool[,] see)
+        {
+            Point p = null;
+            // 相手側
+            Point r = GameConstant.BasePoint[isTopLeft ? 1 : 0];
+            for (int d = 0; d <= 99 + 99 && p == null; d++)
+            {
+                for (int y = Math.Max(0, point.Y - d); y <= Math.Min(GameConstant.FieldSize - 1, point.Y + d); y++)
+                {
+                    int dx = (d - Math.Abs(y - point.Y));
+                    int[] xs = { point.X - dx, point.X + dx };
+                    foreach (int x in xs)
                     {
-                        MyUnit u = freeWorker.MinBy(unit => Game.Manhattan(unit.Point, p));
-
-                        // @magicnumber
-                        if (Game.Manhattan(u.Point, p) <= 10)
+                        if (0 <= x && x < GameConstant.FieldSize && see[x, y] == false)
                         {
-                            // @magicnumber
-                            u.Produce = UnitType.Village;
-                        }
-                        else
-                        {
-                            u.MoveTo = p;
+                            var q = new Point(x, y);
+                            if (p == null || Game.Manhattan(p, r) > Game.Manhattan(q, r))
+                            {
+                                p = q;
+                            }
                         }
                     }
                 }
+            }
+            return p;
+        }
+
+        private void ThinkWorker()
+        {
+            #region 村の建設
+            if (NeedToBuildVillage() && currentResource >= GameConstant.GetCost(UnitType.Village))
+            {
+                var resourcePoints = GetResourcePoints(resource);
+
+                // 現在判明している資源の位置への距離の和が最小となる点
+                // 重み付けしてもよいかも
+                Point p = FieldIter
+                    .MinBy(point =>
+                        resourcePoints
+                        .OrderBy(r => Game.Manhattan(r, myCastle.Point))
+                        .Take(3)
+                        .Sum(resourcePoint =>
+                            Game.Manhattan(point, resourcePoint)));
+
+                var freeWorker = myUnits.Values
+                    .Where(unit => unit.IsFree && unit.Type == UnitType.Worker);
+
+                if (freeWorker.Count() > 0)
+                {
+                    MyUnit u = freeWorker.MinBy(unit => Game.Manhattan(unit.Point, p));
+
+                    // @magicnumber
+                    if (Game.Manhattan(u.Point, p) <= 10)
+                    {
+                        // @magicnumber
+                        u.Produce = UnitType.Village;
+                    }
+                    else
+                    {
+                        u.MoveTo = p;
+                    }
+                }
+
             }
             #endregion
 
             #region 拠点の建設
-            int factoryNum = myUnits.Values.Count(unit => unit.Type == UnitType.Factory);
-            if (factoryNum < 1 && currentResource >= GameConstant.GetCost(UnitType.Factory))
+            if (NeedToBuildFactory() && currentResource >= GameConstant.GetCost(UnitType.Factory))
             {
                 var resourcePoints = GetResourcePoints(resource);
-                // @magicnumber
-                if (resourcePoints.Count() >= 3)
+                // 現在判明している資源の位置への距離の和が最小となる点
+                // 重み付けしてもよいかも
+                Point p = FieldIter
+                    .MinBy(point =>
+                        resourcePoints
+                        .OrderBy(r => Game.Manhattan(r, myCastle.Point))
+                        .Take(3)
+                        .Sum(resourcePoint =>
+                            Game.Manhattan(point, resourcePoint)));
+
+                var freeWorker = myUnits.Values
+                    .Where(unit => unit.IsFree && unit.Type == UnitType.Worker);
+
+                if (freeWorker.Count() > 0)
                 {
-                    // 現在判明している資源の位置への距離の和が最小となる点
-                    // 重み付けしてもよいかも
-                    Point p = FieldIter
-                        .MinBy(point =>
-                            resourcePoints
-                            .Sum(resourcePoint =>
-                                Game.Manhattan(point, resourcePoint)));
+                    MyUnit u = freeWorker.MinBy(unit => Game.Manhattan(unit.Point, p));
 
-                    var freeWorker = myUnits.Values
-                        .Where(unit => unit.IsFree && unit.Type == UnitType.Worker);
-
-                    if (freeWorker.Count() > 0)
+                    // @magicnumber
+                    if (Game.Manhattan(u.Point, p) <= 10)
                     {
-                        MyUnit u = freeWorker.MinBy(unit => Game.Manhattan(unit.Point, p));
-
-                        // @magicnumber
-                        if (Game.Manhattan(u.Point, p) <= 10)
-                        {
-                            u.Produce = UnitType.Factory;
-                        }
-                        else
-                        {
-                            u.MoveTo = p;
-                        }
+                        u.Produce = UnitType.Factory;
+                    }
+                    else
+                    {
+                        u.MoveTo = p;
                     }
                 }
             }
             #endregion
 
+            // @magicnumber
+            var candidates = SortResourcePriority().Take(12);
+            foreach (var point in candidates)
             {
                 var freeWorkers = myUnits.Values.Where(unit => unit.Type == UnitType.Worker && unit.IsFree);
-                foreach (var unit in freeWorkers)
+                var move = freeWorkers.OrderBy(unit => Game.Manhattan(unit.Point, point)).Take(5);
+                foreach (var unit in move)
                 {
-                    if (resource[unit.Point.X, unit.Point.Y])
-                    {
-                        unit.MoveTo = unit.Point;
-                    }
-                }
-            }
-
-            while (true)
-            {
-                int[,] numWorkers = CountNumWorker();
-                var freeWorkers = myUnits.Values.Where(unit => unit.Type == UnitType.Worker && unit.IsFree);
-                if (freeWorkers.Count() == 0)
-                {
-                    break;
-                }
-
-                if (NeedToGetResource(numWorkers))
-                {
-                    MyUnit u = freeWorkers.MinBy(unit => Game.Manhattan(unit.Point, SearchNearestResource(numWorkers, unit)));
-                    u.MoveTo = SearchNearestResource(numWorkers, u);
-                }
-                else
-                {
-                    break;
+                    unit.MoveTo = point;
                 }
             }
 
@@ -218,59 +259,12 @@ namespace CodeVS4.Ofuton
             return true;
         }
 
-        private Point SearchNearestShadowArea(Point point, bool[,] see)
+
+        private IEnumerable<Point> SortResourcePriority()
         {
-            Point p = null;
-            // 相手側
-            Point r = GameConstant.BasePoint[isTopLeft ? 1 : 0];
-            for (int x = 0; x < GameConstant.FieldSize; x++)
-            {
-                for (int y = 0; y < GameConstant.FieldSize; y++)
-                {
-                    if (see[x, y] == false)
-                    {
-                        var q = new Point(x, y);
-                        if (p == null || Tie(Game.Manhattan(point, p), Game.Manhattan(r, p), Game.Manhattan(point, q), Game.Manhattan(r, q)) > 0)
-                        {
-                            p = q;
-                        }
-                    }
-                }
-            }
-            return p;
-        }
-
-        private bool NeedToGetResource(int[,] numWorkers)
-        {
-            foreach (var point in GetResourcePoints(resource))
-            {
-                if (numWorkers[point.X, point.Y] < 5)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        private Point SearchNearestResource(int[,] numWorker, MyUnit unit)
-        {
-            // 取りに行くべきResourceに制約をつけるならココ
-            var freeResouce = GetResourcePoints(resource).Where(point => numWorker[point.X, point.Y] < 5);
-
-            Point p = null;
-            // 自分側
-            Point r = GameConstant.BasePoint[isTopLeft ? 0 : 1];
-
-            foreach (var q in freeResouce)
-            {
-                if (p == null || Tie(Game.Manhattan(unit.Point, p), Game.Manhattan(r, p), Game.Manhattan(unit.Point, q), Game.Manhattan(r, q)) > 0)
-                {
-                    p = q;
-                }
-            }
-
-            return p;
+            Point r = enCastle.IsDiscovered ? enCastle.Point : GameConstant.BasePoint[isTopLeft ? 1 : 0];
+            return GetResourcePoints(resource)
+                .OrderBy(point => Game.Manhattan(point, myCastle.Point) - Game.Manhattan(point, r));
         }
 
         private int[,] CountNumWorker()
@@ -280,11 +274,7 @@ namespace CodeVS4.Ofuton
 
             foreach (var unit in myWorkers)
             {
-                if (resource[unit.Point.X, unit.Point.Y])
-                {
-                    numWorker[unit.Point.X, unit.Point.Y]++;
-                }
-                else if (unit.IsMoving)
+                if (unit.IsMoving && resource[unit.MoveTo.X, unit.MoveTo.Y])
                 {
                     numWorker[unit.MoveTo.X, unit.MoveTo.Y]++;
                 }
@@ -295,34 +285,51 @@ namespace CodeVS4.Ofuton
 
         private void ThinkWarrior()
         {
+            Point p = enCastle.IsDiscovered ? enCastle.Point : SearchEnemyCastle();
             foreach (var unit in myUnits.Values)
             {
-                if (unit.IsWarrior)
+                if (unit.IsFree && unit.IsWarrior)
                 {
-                    Point p = null;
-                    if (enCastle.IsDiscovered)
-                    {
-                        p = enCastle.Point;
-                    }
-                    else
-                    {
-                        p = SearchEnemyCastle();
-                    }
-
                     unit.MoveTo = p;
                 }
             }
+
         }
 
         private Point SearchEnemyCastle()
         {
-            Point p = null;
             Point q = GameConstant.BasePoint[isTopLeft ? 1 : 0];
+            bool[,] b = new bool[GameConstant.FieldSize, GameConstant.FieldSize];
+            var resourcePoints = GetResourcePoints(resource);
+
             for (int x = 0; x < GameConstant.FieldSize; x++)
             {
                 for (int y = 0; y < GameConstant.FieldSize; y++)
                 {
-                    if (seeArea[x, y] == false)
+                    var r = new Point(x, y);
+                    b[x, y] = !seeArea[x, y];
+                    if (Game.Manhattan(q, r) > 40)
+                    {
+                        b[x, y] = false;
+                    }
+
+                    foreach (var point in resourcePoints)
+                    {
+                        if (Game.Manhattan(point, r) <= 10)
+                        {
+                            b[x, y] = false;
+                        }
+                    }
+                }
+            }
+
+            Point p = null;
+
+            for (int x = 0; x < GameConstant.FieldSize; x++)
+            {
+                for (int y = 0; y < GameConstant.FieldSize; y++)
+                {
+                    if (b[x, y])
                     {
                         var r = new Point(x, y);
                         if (p == null || Game.Manhattan(q, p) > Game.Manhattan(q, r))
@@ -332,45 +339,94 @@ namespace CodeVS4.Ofuton
                     }
                 }
             }
+
             return p;
         }
 
-        private void ThinkBuild()
+        private bool NeedToBuildVillage()
+        {
+            int workerCount = myUnits.Values.Count(unit => unit.Type == UnitType.Worker);
+            int villageCount = myUnits.Values.Count(unit => unit.Type == UnitType.Village);
+            // @magicnumber
+            if (villageCount < 1 && GetResourcePoints(resource).Count() >= 3)
+                return true;
+            return false;
+        }
+
+        // @magicnumber
+        private bool NeedToBuildFactory()
         {
             int workerCount = myUnits.Values.Count(unit => unit.Type == UnitType.Worker);
             int villageCount = myUnits.Values.Count(unit => unit.Type == UnitType.Village);
             int factoryCount = myUnits.Values.Count(unit => unit.Type == UnitType.Factory);
+            if (villageCount >= 1 && workerCount >= 30 && factoryCount < 1 && GetResourcePoints(resource).Count() >= 3)
+                return true;
+            return false;
+        }
 
+        // @magicnumber
+        private bool NeedToBuildWorker()
+        {
+            var workers = myUnits.Values.Where(unit => unit.Type == UnitType.Worker);
+            int workersCount = workers.Count();
+            if (workersCount < 30)
+            {
+                return true;
+            }
+
+            if (workers.Where(unit => unit.IsFree).Count() > 0)
+            {
+                return false;
+            }
+
+            var warriors = myUnits.Values.Where(unit => GameConstant.IsWarrior(unit.Type));
+            int warriorsCount = warriors.Count();
+
+            if (warriorsCount < workersCount * 1)
+            {
+                return false;
+            }
+
+            if (workers.Count() < 60)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        private void ThinkBuild()
+        {
             int canUse = currentResource;
 
             // @magicnumber
-            if (villageCount < 1 && workerCount >= 15)
+            if (NeedToBuildVillage())
             {
                 canUse -= GameConstant.GetCost(UnitType.Village);
             }
 
-            if (factoryCount < 1 && FieldIter.Count(point => seeArea[point.X, point.Y]) >= 3000)
+            if (NeedToBuildFactory())
             {
                 canUse -= GameConstant.GetCost(UnitType.Factory);
             }
 
             foreach (var unit in myUnits.Values)
             {
-                if (canUse >= GameConstant.GetCost(UnitType.Worker))
+                if (unit.Type == UnitType.Castle || unit.Type == UnitType.Village)
                 {
-                    if (unit.Type == UnitType.Castle || unit.Type == UnitType.Village)
+                    if (canUse >= GameConstant.GetCost(UnitType.Worker))
                     {
-                        int[,] numWorkers = CountNumWorker();
-                        // @magicnumber
-                        if (workerCount < 20 || (NeedToGetResource(numWorkers) && workerCount <= 60))
+                        if (NeedToBuildWorker())
                         {
-                            workerCount++;
                             canUse -= GameConstant.GetCost(UnitType.Worker);
                             unit.Produce = UnitType.Worker;
                         }
                     }
                 }
+            }
 
+            foreach (var unit in myUnits.Values)
+            {
                 if (unit.Type == UnitType.Factory)
                 {
                     UnitType unitType;
@@ -390,8 +446,12 @@ namespace CodeVS4.Ofuton
 
                     if (canUse >= GameConstant.GetCost(unitType))
                     {
-                        canUse -= GameConstant.GetCost(unitType);
-                        unit.Produce = unitType;
+                        if (NeedToBuildWorker() == false)
+                        {
+                            canUse -= GameConstant.GetCost(unitType);
+                            unit.Produce = unitType;
+                        }
+
                     }
                 }
             }
@@ -404,12 +464,11 @@ namespace CodeVS4.Ofuton
                    (a1 - b1));
         }
 
-        // Random.Nextを使っていることに注意
         public static Point MoveToNextPoint(Point from, Point to)
         {
             int dx = Math.Abs(to.X - from.X);
             int dy = Math.Abs(to.Y - from.Y);
-            if (GameConstant.Random.Next(dx + dy) < dx)
+            if (dy <= dx)
             {
                 if (to.X < from.X)
                 {
